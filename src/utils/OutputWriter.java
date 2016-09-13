@@ -2,27 +2,20 @@ package utils;
 
 import java.io.*;
 import java.util.*;
+import main.Group;
 
 public class OutputWriter {
 
-    public static void save(String outPath, Map<String,ArrayList<String>> seqSorted) throws IOException {
-    //loop over the seqSorted map
-       //create a new file for each seqSorted map entry
-        String filePath = outPath + key + ".seq";
-        try (PrintWriter outFile = new PrintWriter(new FileWriter(filePath))) {
-            for (int i=0; i<outList.size(); i++) {
-                outFile.println(outList.get(i));
-            }
-        }
-    }
-    
-    public static void saveBackup(String workDir, String module, ArrayList<String> outList) throws IOException {
-        //Setting the path to the given folder under the current user's home/Documents directory
-        String outputFile = System.getProperty("user.home") + "/Documents/" + workDir + "/rosalind_" + module + "_out.txt";
-        
-        try (PrintWriter outFile = new PrintWriter(new FileWriter(outputFile))) {
-            for (int i=0; i<outList.size(); i++) {
-                outFile.println(outList.get(i));
+    public static void save(String outPath, ArrayList<Group> seqSorted) throws IOException {
+        //loop over the seqSorted map
+        for (int i=0;i<seqSorted.size();i++) {
+            //create a new file for each seqSorted map entry
+            String filePath = outPath + seqSorted.get(i).getName() + ".seq";
+            //write the grouped reads to the files
+            try (PrintWriter outFile = new PrintWriter(new FileWriter(filePath))) {
+                for (int k=0; k<seqSorted.get(i).getReads().size(); k++) {
+                    outFile.println(seqSorted.get(i).getReads().get(k));
+                }
             }
         }
     }

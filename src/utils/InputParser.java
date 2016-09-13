@@ -7,31 +7,39 @@ package utils;
 
 import java.io.*;
 import java.util.*;
+import main.Group;
 
 /**
  * @author tlvlp
  */
 public class InputParser {
     
-    public static Map<String, ArrayList<String>> parseConf(String inPath) throws IOException {
-    //stores each line of the input file as a map item
-        System.out.println("Input file: " + inPath);
+    
+    public static ArrayList<Group> parseConf(String inPath) throws IOException {
+    //stores each line of the input file as a Group class        
+        ArrayList<Group> groups = new ArrayList<>();
        
-        Map<String,ArrayList<String>> confMap = new HashMap<>();
-        ArrayList<String> mapItems = new ArrayList<>();
-        
         try (final Scanner inFile = new Scanner(new FileReader(inPath))) { 
             while (inFile.hasNextLine()) {
+                //initializing a new version of thisGroup and lineItems at the beginning of each iteration, otherwise it would only overwrite the same value
+                Group thisGroup = new Group();
+                ArrayList<String> lineItems = new ArrayList<>();
                 //parse current line into an arraylist - might be overkill to use arraylists..
-                mapItems = parseStrToALString(inFile.nextLine(),' ');
+                lineItems = parseStrToALString(inFile.nextLine(),' ');
                 //remove the first ArrayList item to get the desired format for the map: String + ArrayList with two items
-                String group = mapItems.get(0);
-                mapItems.remove(0); 
-                //add values to the output map
-                confMap.put(group,mapItems);
+                thisGroup.setName(lineItems.get(0));
+                thisGroup.setBeg(lineItems.get(1));
+                thisGroup.setEnd(lineItems.get(2));
+                groups.add(thisGroup);
+                //adding unmatched collector group at the end
+                if (!inFile.hasNextLine()) {
+                    Group unmatched = new Group();
+                    unmatched.setName("unmatched");
+                    groups.add(unmatched);
+                }
             }
         }
-        return confMap;
+        return groups;
     }
     
     public static ArrayList<String> parseStrToALString(String strIn, Character delimiter) {
@@ -57,7 +65,7 @@ public class InputParser {
         return outList;
     }
     
-    public static ArrayList<String> parseToArrayList(String inPath) throws IOException {
+    public static ArrayList<String> parseFileToAL(String inPath) throws IOException {
     //stores each line of the input file as an arraylist item
  
         ArrayList<String> outList = new ArrayList<>();

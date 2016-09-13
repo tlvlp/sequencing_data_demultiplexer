@@ -14,52 +14,34 @@ import java.util.*;
  * @author tlvlp
  */
 public class SeqSort {
-    public static Map<String,ArrayList<String>> sort(Map<String,ArrayList<String>> confMap, ArrayList<String> seqList) {
-        Map<String,ArrayList<String>> seqSorted = new HashMap<>();
-        ArrayList<String> checkStrings = new ArrayList<>();
-        ArrayList<String> collectReads = new ArrayList<>();
-        String begString ="", endString ="", key="";
-        
-        //iterat over the confMap's keyset
-        Iterator iter = confMap.keySet().iterator();
-        while (iter.hasNext()) {
-            // iter.next() is the key in confMap
-            key = iter.next().toString();
-            checkStrings = confMap.get(key);
-            begString = checkStrings.get(0);
-            endString = checkStrings.get(1);
-            //check all reads in the seqlist for the ending and beginning strings in checkStrings
-            for (int i=0; i<seqList.size();i++) {
-                if (seqList.get(i).startsWith(begString) && seqList.get(i).endsWith(endString)) {
-                                       
+    public static ArrayList<Group> sort(ArrayList<Group> groups, ArrayList<String> seqList) {
+        ArrayList<Group> groupsSeq = new ArrayList<>();
+        //iterate over the groups
+        for (int i=0;i<groups.size();i++) {
+            //init read collector and group to be modified and saved back to the list
+            ArrayList<String> readCollector = new ArrayList<>();
+            Group thisGroup = new Group();
+            thisGroup = groups.get(i);
+            String begString,endString;
+            begString = groups.get(i).getBeg();
+            endString = groups.get(i).getEnd();
+            
+            //iterate over the read list
+            for (int k=0; k<seqList.size();k++) {                
+                
+                if (seqList.get(k).startsWith(begString) && seqList.get(k).endsWith(endString)) {                                        
                     //add read to the collector
-                    collectReads.add(seqList.get(i));
+                    
+                    readCollector.add(seqList.get(k));                    
                     //overwrite the collected seqList item with an empty string - removing it without messing up the list that we are iterating over
-                    seqList.set(i, "");
+                    
+                    //seqList.set(k, "*");
+                    seqList.remove(k);
                 }
             }
-            //add the collected reads to a new map entry of SeqSorted            
-            seqSorted.put(key,collectReads);
-
-            //clear the collector
-            collectReads.clear();
-            
+            thisGroup.setReads(readCollector);
+            groupsSeq.add(thisGroup);
         }
-        //add the remaining reads to the unmatched map entry
-        for (int i=0; i<seqList.size();i++) {
-            if (!seqList.get(i).equals("")) {
-                //add read to the collector
-                collectReads.add(seqList.get(i));
-                //overwrite the collected seqList item with an empty string - removing it without messing up the list that we are iterating over
-                seqList.set(i, "");
-                
-            }
-        }
-        //add the collected reads to a new map entry of SeqSorted            
-        seqSorted.put("unmatched",collectReads);
-        System.out.println(seqSorted);
-        
-        collectReads.clear();
-        return seqSorted;
+        return groupsSeq;
     }
 }
